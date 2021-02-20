@@ -62,7 +62,7 @@ router.post("/auth", async (req, res) => {
         .status(404)
         .json({ err: "Пользователь с указанным логинои не найден" });
     }
-    const isMatch = await bcrypt.compare(password, player.password);
+    const isMatch = await bcrypt.compare(req.body.password, player.password);
     if (!isMatch) {
       return res.status(400).json({ err: "Неверный пароль" });
     }
