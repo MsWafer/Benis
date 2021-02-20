@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
     return res.json("huy");
   }
 
-  let { email, password, login } = req.body;
+  let { email, pwd, login } = req.body;
   if (!email || !login || !pwd) {
     return res.json({ msg: "Заполните все поля" });
   }
