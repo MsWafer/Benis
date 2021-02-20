@@ -5,10 +5,11 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const Player = require("../models/Player");
+const auth = require("../middleware/auth");
 
 //reg
 router.post("/", async (req, res) => {
-  let { email, password, login, name, lastname } = req.body;
+  let { email, password, login } = req.body;
   if (!email || !login || !pwd) {
     return res.json({ msg: "Заполните все поля" });
   }
@@ -23,9 +24,6 @@ router.post("/", async (req, res) => {
       email,
       login,
       password,
-      name: name,
-      lastname: lastname,
-      fullname: lastname + " " + name,
     });
     await player.save();
     jwt.sign(
@@ -83,3 +81,95 @@ router.post("/auth", async (req, res) => {
     return res.status(500).json({ err: "Server error" });
   }
 });
+
+//get me
+router.get("/me", auth, async (req, res) => {
+  try {
+    let player = await Player.findOne({ _id: req.player.id });
+    if (!player) {
+      return res.status(400).json({ err: "Якась хуйня" });
+    }
+    return res.json(player);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ err: "Server error" });
+  }
+});
+
+//edit me
+router.put("/me/edit", auth, async (req, res) => {
+  try {
+    let player = await Player.findOne({ _id: req.player.id });
+    if (!player) {
+      return res.status(404).json({ err: "Пользователь не найден" });
+    }
+    let { name, lastname, hours, city } = req.body;
+    player.name = name;
+    player.lastname = lastname;
+    player.fullname = lastname + " " + name;
+    player.activeTime.push(hours);
+    player.city = city;
+    await player.save();
+    return res.json(player);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ err: "Server error" });
+  }
+});
+
+//get other player
+router.get("/find", auth, async (req, res) => {
+  try {
+    let response;
+    if (req.query.field == "all") {
+      response = await Player.find();
+    } else if (req.query.field == "city") {
+      response = await Player.find({ city: req.query.value });
+    } else if (req.query.field == "id") {
+      response = await Player.findOne({ _id: req.query.value });
+    } else {
+      response = "Фронтэндер хуй соси";
+    }
+    return res.json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ err: "Server error" });
+  }
+});
+
+//start/stop searching
+router.put("/go", auth, async (req, res) => {
+  try {
+    let player = await Player.findOne({ _id: req.player.id });
+    if (!player) {
+      return res.status(400).json({ err: "Хуйня якась" });
+    }
+    player.ready = !player.ready;
+    await player.save();
+    return res.json({ msg: "Статус изменен" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ err: "Server error" });
+  }
+});
+
+//remove active hours
+router.delete("/h", auth, async (req, res) => {
+  try {
+    let player = await Player.findOne({ _id: req.player.id });
+    if (!player) {
+      return res.status(400).json({ err: "Хуйня якась" });
+    }
+    let delhour = player.activeTime.filter((time) => time._id == req.body.id);
+    await Player.findOneAndUpdate(
+      { _id: req.player.id, "activeHours._id": req.body.id },
+      { $pull: { activeTime: delhour } }
+    );
+    return res.json({ player });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ err: "Server error" });
+  }
+});
+
+module.exports = router;
