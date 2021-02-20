@@ -9,6 +9,10 @@ const auth = require("../middleware/auth");
 
 //reg
 router.post("/", async (req, res) => {
+  if (!req.body) {
+    return res.json("huy");
+  }
+
   let { email, password, login } = req.body;
   if (!email || !login || !pwd) {
     return res.json({ msg: "Заполните все поля" });
