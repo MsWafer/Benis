@@ -20,43 +20,12 @@ const PlayerSchema = new Schema({
   password: {
     type: String,
   },
-  activeTime: {
-    monday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
+  activeTime: [
+    {
+      start: { type: Number },
+      end: { type: Number },
     },
-    tuesday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
-    },
-    wednesday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
-    },
-    thursday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
-    },
-    friday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
-    },
-    saturday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
-    },
-    sunday: {
-      start: { type: Number, default: 0 },
-      end: { type: Number, default: 1 },
-      active: { type: Boolean, default: false },
-    },
-  },
+  ],
   ready: {
     type: Boolean,
     default: false,

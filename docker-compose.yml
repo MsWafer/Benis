@@ -1,0 +1,30 @@
+version: '3'
+services:
+  app:
+    container_name: benis
+    restart: always
+    build: .
+    ports:
+      - '1488:1488'
+    depends_on:
+      - 'mongo'
+    volumes:
+      - ticketSS:/usr/src/app/public/ticketSS
+      - avatars:/usr/src/app/public/avatars
+  mongo:
+    container_name: mongo_benis
+    restart: always
+    image: mongo:4.4.2
+    command: mongod --port 27019
+    ports: 
+     - '27019:27019'
+    volumes:
+     - mongo-config:/data/configdb
+     - mongoData:/data/db            
+volumes:
+  mongo-config:
+  ticketSS:
+  avatars:
+  mongoData:
+    external:
+      name: mongo_external

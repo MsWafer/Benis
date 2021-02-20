@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const Player = require("../models/Player");
-const User = require("../../Platform/models/User");
 
 //reg
 router.post("/", async (req, res) => {
@@ -14,7 +13,7 @@ router.post("/", async (req, res) => {
     return res.json({ msg: "Заполните все поля" });
   }
   try {
-    let check = await User.findOne({ email });
+    let check = await Player.findOne({ email });
     if (check) {
       return res.json({ err: "Пользователь с указанным email уже найден" });
     }
@@ -52,7 +51,7 @@ router.post("/", async (req, res) => {
 router.post("/auth", async (req, res) => {
   try {
     if (!req.body.login || !req.body.password) {
-      return res.status(401).json({ err: "Неверные логин или пароль" });
+      return res.status(401).json({ err: "Введите логин и пароль" });
     }
     let player = await Player.findOne({ login: req.body.login });
     if (!player) {
