@@ -7,9 +7,10 @@ module.exports = (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.jwtSecret);
-
     req.player = decoded.player;
+    next();
   } catch (error) {
     res.status(401).json({ err: "Неверный токен" });
   }
 };
+

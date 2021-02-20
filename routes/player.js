@@ -104,7 +104,9 @@ router.get("/me", auth, async (req, res) => {
 //edit me
 router.put("/me/edit", auth, async (req, res) => {
   try {
+    console.log("huys")
     let player = await Player.findOne({ _id: req.player.id });
+    
     if (!player) {
       return res.status(404).json({ err: "Пользователь не найден" });
     }
@@ -112,7 +114,7 @@ router.put("/me/edit", auth, async (req, res) => {
     player.name = name;
     player.lastname = lastname;
     player.fullname = lastname + " " + name;
-    player.activeTime.push(hours);
+    player.activeTime = player.activeTime.concat(hours);
     player.city = city;
     await player.save();
     return res.json(player);
