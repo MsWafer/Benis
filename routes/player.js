@@ -30,6 +30,7 @@ router.post("/", async (req, res) => {
       password,
     });
     await player.save();
+    const payload = { player: { id: player.id } };
     jwt.sign(
       payload,
       process.env.jwtSecret,
