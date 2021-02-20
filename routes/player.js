@@ -90,7 +90,7 @@ router.post("/auth", async (req, res) => {
 //get me
 router.get("/me", auth, async (req, res) => {
   try {
-    let player = await Player.findOne({ _id: req.player.id });
+    let player = await Player.findOne({ _id: req.player.id }).select("-password");
     if (!player) {
       return res.status(400).json({ err: "Якась хуйня" });
     }
@@ -105,7 +105,7 @@ router.get("/me", auth, async (req, res) => {
 router.put("/me/edit", auth, async (req, res) => {
   try {
     console.log("huys")
-    let player = await Player.findOne({ _id: req.player.id });
+    let player = await Player.findOne({ _id: req.player.id }).select("-password");
     
     if (!player) {
       return res.status(404).json({ err: "Пользователь не найден" });
@@ -114,7 +114,7 @@ router.put("/me/edit", auth, async (req, res) => {
     player.name = name;
     player.lastname = lastname;
     player.fullname = lastname + " " + name;
-    player.activeTime = player.activeTime.concat(hours);
+    player.activeTime = hours;
     player.city = city;
     await player.save();
     return res.json(player);
@@ -129,11 +129,11 @@ router.get("/find", auth, async (req, res) => {
   try {
     let response;
     if (req.query.field == "all") {
-      response = await Player.find();
+      response = await Player.find().select("-password");
     } else if (req.query.field == "city") {
-      response = await Player.find({ city: req.query.value });
+      response = await Player.find({ city: req.query.value }).select("-password");
     } else if (req.query.field == "id") {
-      response = await Player.findOne({ _id: req.query.value });
+      response = await Player.findOne({ _id: req.query.value }).select("-password");
     } else {
       response = "Фронтэндер хуй соси";
     }

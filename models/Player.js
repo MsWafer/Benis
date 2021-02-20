@@ -20,12 +20,9 @@ const PlayerSchema = new Schema({
   password: {
     type: String,
   },
-  activeTime: [
-    {
-      start: { type: Number },
-      end: { type: Number },
-    },
-  ],
+  activeTime: {
+    type: Object,
+  },
   ready: {
     type: Boolean,
     default: false,
