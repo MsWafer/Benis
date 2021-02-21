@@ -3,6 +3,8 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const EloRank = require("elo-rank");
+const elo = new EloRank(15)
 
 const Player = require("../models/Player");
 const auth = require("../middleware/auth");
@@ -90,10 +92,11 @@ router.post("/auth", async (req, res) => {
 //get me
 router.get("/me", auth, async (req, res) => {
   try {
-    let player = await Player.findOne({ _id: req.player.id }).select("-password");
+    let player = await Player.findOne({ _id: req.player.id }).select("-password").populate("match");
     if (!player) {
       return res.status(400).json({ err: "Якась хуйня" });
     }
+    // console.log(player)
     return res.json(player);
   } catch (error) {
     console.error(error);
@@ -104,9 +107,8 @@ router.get("/me", auth, async (req, res) => {
 //edit me
 router.put("/me/edit", auth, async (req, res) => {
   try {
-    console.log("huys")
     let player = await Player.findOne({ _id: req.player.id }).select("-password");
-    
+    // console.log(req.body)
     if (!player) {
       return res.status(404).json({ err: "Пользователь не найден" });
     }
@@ -129,11 +131,11 @@ router.get("/find", auth, async (req, res) => {
   try {
     let response;
     if (req.query.field == "all") {
-      response = await Player.find().select("-password");
+      response = await Player.find().select("-password").populate("match").sort({rating:-1});
     } else if (req.query.field == "city") {
-      response = await Player.find({ city: req.query.value }).select("-password");
+      response = await Player.find({ city: req.query.value }).select("-password").populate("match").sort({rating:-1});
     } else if (req.query.field == "id") {
-      response = await Player.findOne({ _id: req.query.value }).select("-password");
+      response = await Player.findOne({ _id: req.query.value }).select("-password").populate("match");
     } else {
       response = "Фронтэндер хуй соси";
     }

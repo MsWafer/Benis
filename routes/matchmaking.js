@@ -127,12 +127,18 @@ router.put("/match", auth, async (req, res) => {
     if (!match) {
       return res.status(404).json({ err: "Матч не найден" });
     }
-    if (match.status == "accepted") {
+    if (match.status == "pending") {
+      match.status = "accepted";
+      await match.save();
+      return res.status(102).json(match);
+    } else if (match.status == "accepted") {
       match.status = "active";
       await match.save();
       return res.status(202).json(match);
-    } else {
+    } else if (match.status == "active") {
       match.status = "incoming";
+      match.date = req.body.date;
+      match.location = req.body.location;
       await match.save();
       return res.status(200).json(match);
     }
@@ -143,13 +149,13 @@ router.put("/match", auth, async (req, res) => {
 });
 
 //finish match
-router.put("/finish",auth,async(req,res)=>{
-    try {
-        let match = await Match.findOne({_id:req.body.id})
-        match.status="finished"
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({err:"Server error"})
-    }
-})
+router.put("/finish", auth, async (req, res) => {
+  try {
+    let match = await Match.findOne({ _id: req.body.id });
+    match.status = "finished";
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ err: "Server error" });
+  }
+});
 module.exports = router;

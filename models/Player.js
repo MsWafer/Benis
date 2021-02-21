@@ -34,24 +34,16 @@ const PlayerSchema = new Schema({
   city: {
     type: String,
   },
+  win:{
+    type: Number,
+  },
+  defeat: {
+    type: Number,
+  },
   games: [
     {
-      opponent: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "player",
-      },
-      playerScore: {
-        type: Number,
-      },
-      oppScore: {
-        type: Number,
-      },
-      win: {
-        type: Boolean,
-      },
-      date: {
-        type: Date,
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"match"
     },
   ],
   warning: [
